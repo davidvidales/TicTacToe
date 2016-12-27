@@ -8,28 +8,32 @@ public class Player {
     private char mark;
     private String winCondition = "";
     private int points;
-    private boolean isAI;
+    //
     
     public Player(String startName, char newMark) {
         name = startName;
         mark = newMark;
         
-        if (name.equalsIgnoreCase("AI1") || name.equalsIgnoreCase("AI2")) {
-            isAI = true;
-        }
+        //if (name.equalsIgnoreCase("AI1") || name.equalsIgnoreCase("AI2")) {
+        //    isAI = true;
+        //}
     }
     
     public String getName() {
         return name;
     }
     
+    public char getMark() {
+        return mark;
+    }
+    
     public String getWinCondition() {
         return winCondition;
     }
     
-    public boolean getAI() {
-        return isAI;
-    }
+    //public boolean getAI() {
+    //    return isAI;
+    //}
     
     public int getPoints() {
         return points;

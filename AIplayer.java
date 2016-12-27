@@ -1,7 +1,5 @@
 package tictactoe;
 
-
-
 public class AIplayer extends Player{
 
     public AIplayer(String startName, char newMark) {
