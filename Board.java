@@ -6,12 +6,9 @@ public class Board {
     private int winCondition;
     private int turn = 1;
     private char[][] content;
-    private final int continueGame = 0;
-    private final int p1win = 1;
-    private final int p2win = 2;
-    private final int draw = 3;
-    
-    
+    private final int continueGame = -2;
+    private final int drawGame = -1;
+        
     public Board(int size) {
         content = new char[size][size];
         boardSize = size;
@@ -34,24 +31,24 @@ public class Board {
         winCondition = newWinCondition;
     }
     
-    public int getState(String p1winCondition, String p2winCondition) {
-        int result = getWidthOrHeightWinner(p1winCondition, p2winCondition);
-        if (result > 0) {
-            return result;
+    public int getState(ArrayList<Player> players) {
+        int winner = getWidthOrHeightWinner(players);
+        if (winner != continueGame) {
+            return winner;
         }
         
-        result = getDiagonalsWinner(p1winCondition, p2winCondition);
-        if (result > 0) {
-            return result;
+        winner = getDiagonalsWinner(players);
+        if (winner != continueGame) {
+            return winner;
         }
         
         if (isDraw()) {
-            return draw;
+            return drawGame;
         }
         return continueGame;
     }
     
-    public int getWidthOrHeightWinner(String p1winCondition, String p2winCondition) {
+    public int getWidthOrHeightWinner(ArrayList<Player> players) {
         String width = "";
         String height = "";
         
@@ -61,18 +58,18 @@ public class Board {
                 height += content[x][y];
             }
 
-            if (width.contains(p1winCondition) || height.contains(p1winCondition)) {
-                return p1win;
-            } else if (width.contains(p2winCondition) || height.contains(p2winCondition)) {
-                return p2win;
+            for (int player = 0; player < players.size(); player++) {
+                if (width.contains(players.get(player).getWinCondition()) || height.contains(players.get(player).getWinCondition())) {
+                    return player;
+                }
             }
             width = "";
             height = "";
         }
-        return 0;
+        return continueGame;
     }
 
-    public int getDiagonalsWinner(String p1winCondition, String p2winCondition) {    
+    public int getDiagonalsWinner(ArrayList<Player> players) {    
         String firstDia = "";
         String secondDia = "";
         
@@ -82,10 +79,10 @@ public class Board {
                 secondDia += content[y][boardSize - x - 1];
             }
             
-            if (firstDia.contains(p1winCondition) || secondDia.contains(p1winCondition)) {
-                return p1win;
-            } else if (firstDia.contains(p2winCondition) || secondDia.contains(p2winCondition)) {
-                return p2win;
+            for (int player = 0; player < players.size(); player++) {
+                if (firstDia.contains(players.get(player).getWinCondition()) || secondDia.contains(players.get(player).getWinCondition())) {
+                    return player;
+                }
             }
             firstDia = "";
             secondDia = "";
@@ -94,7 +91,7 @@ public class Board {
                 j++;
             } else i--;
         }
-        return 0;
+        return continueGame;
     }
 
     public boolean isDraw() {
