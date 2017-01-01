@@ -4,7 +4,6 @@ import java.util.*;
 public class Board {   
     private int boardSize;
     private int winCondition;
-    private int turn = 1;
     private char[][] content;
     private final int continueGame = -2;
     private final int drawGame = -1;
@@ -29,6 +28,14 @@ public class Board {
     
     public void setWinCondition(int newWinCondition) {
         winCondition = newWinCondition;
+    }
+    
+    public char getCell(int y, int x) {
+        return content[y][x];
+    }
+    
+    public void setCell(int y, int x, char newMark) {
+        content[y][x] = newMark;
     }
     
     public int getState(ArrayList<Player> players) {
@@ -95,18 +102,24 @@ public class Board {
     }
 
     public boolean isDraw() {
-        return (turn > boardSize * boardSize);
+        for (int y = 0; y < boardSize; y++) {
+            for (int x = 0; x < boardSize; x++) {
+                if (content[y][x] == ' ') {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     
     public void reset() {
         for (char[] row : content) {
             Arrays.fill(row, ' ');
         }
-        turn = 1;
     }
     
-    public void drawBoard(ArrayList<Player> players) {
-        drawGameStats(players);
+    public void drawBoard(int turn, ArrayList<Player> players) {
+        drawGameStats(turn, players);
         System.out.print("\n\n    ");
         drawXlegends();
         System.out.print("\n\n");        
@@ -117,11 +130,11 @@ public class Board {
         }
     }
     
-    private void drawGameStats(ArrayList<Player> players) {
+    private void drawGameStats(int turn, ArrayList<Player> players) {
         System.out.print("\n" + winCondition + " in a row - turn: " + turn + "\n\n- ");
         
         for (int i = 0; i < players.size(); i++) {
-            System.out.print(players.get(i).getName() + " " + players.get(i).getPoints() + " - ");
+            System.out.print("(" + players.get(i).getMark() + ")" + players.get(i).getName() + " " + players.get(i).getPoints() + " - ");
         }
     }
     
@@ -154,10 +167,9 @@ public class Board {
             if (x < boardSize - 1) {
                 System.out.print("|");
             } else {
-                System.out.println();
+                System.out.print("\n    ");
             }
         }
-        System.out.print ("    ");
 
         if (y < boardSize) {
             for (int x = 0; x < boardSize; x++) {
@@ -174,18 +186,38 @@ public class Board {
         return (content[y][x] != ' ');
     }
     
-    public void addChar(int y, int x, char activePlayer) {
-        content[y][x] = activePlayer;
-        turn ++;
+    public Board getCopy() {
+        Board boardOut = new Board(boardSize);
+        boardOut.setWinCondition(winCondition);
+        
+        for (int y = 0; y < boardSize; y++) {
+            for (int x = 0; x < boardSize; x++) {
+                boardOut.setCell(y, x, content[y][x]);
+            }
+        }
+        return boardOut;
     }
     
-    public void removeChar(int y, int x) {
-        content[y][x] = ' ';
+    public int evaluateBoard(ArrayList<Player> playersIn, Board boardIn, int playerIn) {   
+        if (boardIn.getState(playersIn) == 1) {
+            return 100;
+        } else if (boardIn.getState(playersIn) > -1) {
+            return -100;
+        } else {
+            return 0;
+        }
     }
     
-    public int minimax(int iterations) {
+    public ArrayList<Move> getPossibleMoves() {
+        ArrayList<Move> movesOut = new ArrayList<Move>();
         
-        
-        return 0;
+        for (int y = 0 ; y < getBoardSize(); y++) {
+            for (int x = 0 ; x < getBoardSize(); x++) {
+                if(!isCellTaken(y, x)) {
+                    movesOut.add(new Move(y, x));
+                }
+            }
+        }
+        return movesOut;
     }
 }

@@ -3,20 +3,27 @@ import java.util.*;
 
 public class TicTacToe {
     static Scanner scan = new Scanner(System.in);
-   
+    static int activePlayer = 0;
+    static int turn = 1;
+    static final int numberOfPlayers = 2;
+    static final int pointsPerWin = 1;
+    static final int minBoardSize = 3;
+    static final int maxBoardSize = 999;
+    static final char[] marks = {'X', 'O', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'
+    , 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', 'Z'};
+    static Board board = setupBoard();
+    static ArrayList<Player> players = setupPlayers();
+    
     public static void main(String[] args) {
-        final int numberOfPlayers = 2;
-        final int pointsPerWin = 1;
-        final int minBoardSize = 3;
-        final int maxBoardSize = 999;
-        final int continueGame = -2;
-        final int drawGame = -1;        
-        final char[] marks = {'X', 'O', 'A', 'B', 'C'};
-        
-        int activePlayer = 0;
-        Move move = null;
-        ArrayList<Player> players = new ArrayList<Player>();
-        
+        while (true) {
+            drawTurn();
+            playerMoves();
+            winCheck();
+            switchPlayer();
+        }
+    }
+    
+    public static Board setupBoard() {
         System.out.print("Size of board (" + minBoardSize + "-" + maxBoardSize + "): ");
         Board board = new Board(getAnInteger(minBoardSize, maxBoardSize));
         
@@ -24,63 +31,74 @@ public class TicTacToe {
             System.out.print("Win condition ("+ minBoardSize + "-" + board.getBoardSize() + "): ") ;
             board.setWinCondition(getAnInteger(minBoardSize, board.getBoardSize()));     
         }
-        
-        for (int i = 0; i < numberOfPlayers; i++) {
-            System.out.print("Name of player " + (i + 1) + " (AI for computer): ");
-            String newName = scan.nextLine();
-            
-            if (newName.equalsIgnoreCase("AI")) {
-                players.add(new AIplayer(newName, marks[i]));
-            } else {
-                players.add(new Player(newName, marks[i]));
-            }
-            players.get(i).setWinCondition(board.getWinCondition());
-        }
-
-        do {
-            System.out.print("\n\n\n");
-            board.drawBoard(players);    
-            System.out.println("\n- " + players.get(activePlayer).getName() + " -");
-
-            do {
-                move = Player.makeMove(board.getBoardSize());
-
-                if (board.isCellTaken(move.getY(), move.getX())) {//fixa
-                    System.out.println("That spot is taken, try again.");
-                }   
-            } while (board.isCellTaken(move.getY(), move.getX()));
-            board.addChar(move.getY(), move.getX(), players.get(activePlayer).getMark());    
-            //}
-            
-            int boardState = board.getState(players);
-            
-            if (boardState != continueGame) {
-                board.drawBoard(players);
-
-                if (boardState != drawGame) {
-                    System.out.println("\n" + players.get(activePlayer).getName() + " won!");
-                    players.get(activePlayer).addPoints(pointsPerWin);
-                } else {
-                    System.out.println( "\n" + "It's a draw!");
-                }
-                board.reset();
-            }
-            activePlayer = switchPlayer(activePlayer, numberOfPlayers);
-        } while (true);   
+        return board;
     }
     
-    public static int switchPlayer(int activePlayer, int numberOfPlayers) {
+    public static ArrayList<Player> setupPlayers() {
+        ArrayList<Player> players = new ArrayList<Player>();
+         
+        for (int playerNumber = 0; playerNumber < numberOfPlayers; playerNumber++) {
+            System.out.print("Name of player " + marks[playerNumber] + " (AI for computer): ");
+            String newName = scan.nextLine();
+
+            if (newName.equalsIgnoreCase("AI")) {
+                players.add(new AIplayer(newName, playerNumber, marks[playerNumber]));
+            } else {
+                players.add(new Player(newName, playerNumber, marks[playerNumber]));
+            }
+            players.get(playerNumber).setWinCondition(board.getWinCondition());
+        }
+        return players;
+    }
+    
+    public static void drawTurn() {
+        System.out.print("\n\n\n");
+        board.drawBoard(turn, players);    
+        System.out.println("\n- (" + players.get(activePlayer).getMark() + ")" + players.get(activePlayer).getName() + " -");     
+    }
+    
+    public static void playerMoves() {
+        Move move = null;
+
+        do {
+            move = players.get(activePlayer).selectMove(players, board);
+            if (board.isCellTaken(move.getY(), move.getX())) {
+                System.out.println("That spot is taken, try again.");
+            }   
+        } while (board.isCellTaken(move.getY(), move.getX()));
+        board.setCell(move.getY(), move.getX(), players.get(activePlayer).getMark());
+        turn++;
+    }
+    
+    public static void winCheck() {
+        final int continueGame = -2;
+        final int drawGame = -1;
+        int boardState = board.getState(players);
+
+        if (boardState != continueGame) {
+            board.drawBoard(turn, players);
+
+            if (boardState != drawGame) {
+                System.out.println("\n" + players.get(activePlayer).getName() + " won!");
+                players.get(activePlayer).addPoints(pointsPerWin);
+            } else {
+                System.out.println("\n" + "It's a draw!");
+            }
+            board.reset();
+            turn = 1;
+        }
+    }
+    
+    public static void switchPlayer() {
         activePlayer++;
-        
+
         if (activePlayer == numberOfPlayers) {
             activePlayer = 0;
         }
-        return activePlayer;
     }
     
     public static int getAnInteger(int minValue, int maxValue) {
         int input = 0;
-        final String notNumberError = "That's not a valid number, try again: ";
         
         do {
             try {
@@ -93,7 +111,7 @@ public class TicTacToe {
             if (input >= minValue && input <= maxValue) {
                 return input;
             }
-            System.out.print(notNumberError);
+            System.out.print("That's not a valid number, try again: ");
         } while (true);
     }
 }

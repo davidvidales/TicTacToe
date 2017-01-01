@@ -1,19 +1,26 @@
 package tictactoe;
+import java.util.*;
 import static tictactoe.TicTacToe.getAnInteger;
 
 public class Player {       
     private String name;
-    private char mark;
     private String winCondition = "";
+    private char mark;
     private int points;
+    private int playerNumber;
     
-    public Player(String startName, char newMark) {
-        name = startName;
+    public Player(String newName, int newPlayerNumber, char newMark) {
+        name = newName;
+        playerNumber = newPlayerNumber;
         mark = newMark;
     }
     
     public String getName() {
         return name;
+    }
+    
+    public int getPlayerNumber() {
+        return playerNumber;
     }
     
     public char getMark() {
@@ -42,30 +49,12 @@ public class Player {
         points += newPoints;
     }
     
-    public static Move makeMove(int boardSize) {
+    public Move selectMove(ArrayList<Player> players, Board board) {
         System.out.print("X: ");
-        int x = getAnInteger(1, boardSize) - 1;
+        int x = getAnInteger(1, board.getBoardSize()) - 1;
 
         System.out.print("Y: ");
-        int y = getAnInteger(1, boardSize) - 1;
+        int y = getAnInteger(1, board.getBoardSize()) - 1;
         return new Move(y, x);
-    }
-}
-
-class Move {
-    private int y;
-    private int x;
-
-    Move(int newY, int newX) {
-        y = newY;
-        x = newX;
-    }
-    
-    public int getY() {
-        return y;
-    }
-    
-    public int getX() {
-        return x;
     }
 }

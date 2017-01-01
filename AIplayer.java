@@ -1,164 +1,71 @@
 package tictactoe;
+import java.util.*;
 
 public class AIplayer extends Player{
-
-    public AIplayer(String startName, char newMark) {
-        super(startName, newMark);
+    final int depth = 5;
+    
+    public AIplayer(String newName, int newPlayerNumber, char newMark) {
+        super(newName, newPlayerNumber, newMark);
+    }
+    
+    public Move selectMove(ArrayList<Player> playersIn, Board boardIn) {
+        ArrayList<Move> possibleMoves = boardIn.getPossibleMoves();
+        Move bestMove = possibleMoves.get(0);
+        int bestMinimax = -10001;
+   
+        for(int i = 0; i < possibleMoves.size(); i++){
+            Board tempBoard = boardIn.getCopy();
+            tempBoard.setCell(possibleMoves.get(i).getY(), possibleMoves.get(i).getX(), 'O');
+            int minimax = minimax(tempBoard, depth, 0, playersIn);
+            
+            if(minimax > bestMinimax){
+                bestMove = possibleMoves.get(i);
+                bestMinimax = minimax;
+            }
+        }
+        return bestMove;
     }
 
-    public static void move() {
-                       
-                //int i = 0;
-                //int tempY;
-                //int tempX;
-                
-                
-                //do {
-                /*repeat = true;
-                    boolean aiWon = false;
-                    boolean opponentWouldWin = false;
-                    
-                    for (tempX = 0, tempY = 0; tempY < boardSize && !aiWon; tempX++) {
-                        if (!board.isCellTaken(tempY, tempX))
-                            if (board.winCheck(tempY, tempX, activePlayer, winCondition)) {
-                            y = tempY;
-                            x = tempX;
-                            board.addChar(y, x, activePlayer);
-                            aiWon = true;
-                            
-                            } else if (board.winCheck(tempY, tempX, switchPlayer(activePlayer), winCondition) && !aiWon) {
-                                y = tempY;
-                                x = tempX;
-                                opponentWouldWin = true;
-                                }
-                            if (tempX == boardSize - 1) {
-                                tempX = -1;
-                                tempY++;
-                        }
-                    }*/
-                    
-                    
-                    /*if (!aiWon) {
-                        for (int i = 0; i < sequenceX.size() && !opponentWouldWin; i++) {
-                            y = emptyY.get(i);
-                            x = emptyX.get(i);
-                            board.addChar(y, x, activePlayer);
-                            
-                            for (tempX = 0, tempY = 0; tempY < boardSize && !opponentWouldWin; tempX++) {
-                                if (!board.isCellTaken(tempY, tempX)) {
-
-                                    if (board.winCheck(tempY, tempX, switchPlayer(activePlayer), winCondition)) {
-                                        y = tempY;
-                                        x = tempX;
-                                        board.addChar(y, x, activePlayer);
-                                        opponentWouldWin = true;
-                                    }
-                                }
-                                if (tempX == boardSize - 1) {
-                                    tempX = -1;
-                                    tempY++;
-                                }
-                            }
-                            board.removeChar(emptyY.get(i), emptyX.get(i));
-                        }
-                    }
-                    if (!aiWon && !opponentWouldWin) {
-                        y = rng.nextInt(boardSize - 1 + 1);
-                        x = rng.nextInt(boardSize - 1 + 1);
-                        board.addChar(y, x, activePlayer);
-                        System.out.println("RANDOM"); 
-                    }
-                    
-                    aiWon = false;
-                    opponentWouldWin = false;*/
-                    
-                    
-                    
-                    /*do {
-
-                        i++;
-                        tempX++;
-                        //System.out.println("Innanför loopen tempY: " + tempY + " tempX: " + tempX + " Y: " + y + " X: " + x + " I: " + i);
-                        
-                        if (tempX == boardSize) {
-                            tempX = 0;
-                            tempY++;
-                        }
-                        if (!board.isCellTaken(tempY, tempX)) {
-                            emptyY.add(tempY);
-                            emptyX.add(tempX);
-                        
-                            if (board.winCheck(tempY, tempX, activePlayer, winCondition)) {
-                                y = tempY;
-                                x = tempX;
-                                aiWon = true;
-                            } else if (board.winCheck(tempY, tempX, switchPlayer(activePlayer), winCondition) && !aiWon) {
-                                y = tempY;
-                                x = tempX;
-                                opponentWillWin = true;
-                            }
-                        }
-                    } while (!aiWon && i != boardSize * boardSize);*/
-                    
-                    /*if (!aiWon && !opponentWillWin) {
-                        y = emptyY.get(0);
-                        x = emptyX.get(0);
-                        board.addChar(y, x, activePlayer); //Lägger till tecknet i cellen 
-                        
-                        
-                    }*/
-                    
-                    /*aiWon = false;
-                    opponentWon = false;
-                    
-                    for (int l = 0; l < emptyX.size(); l++) {
-                        System.out.print("Y : " + emptyY.get(l));
-                        System.out.println(" X : " + emptyX.get(l));
-                        
-                    }
-
-                    emptyY.clear();
-                    emptyX.clear();*/
-                    
-                    
-                    //board.addChar(y, x, activePlayer); //Lägger till tecknet i cellen
-                //System.out.println("Utanför loopen  tempY: " + tempY + " tempX: " + tempX + " Y: " + y + " X: " + x + " I: " + i);
-                //} while (!board.winCheck(y, x, activePlayer) && i != boardSize * boardSize);  
-                
-                /*while (board.isCellTaken(y, x)) {
-                    y = rng.nextInt(boardSize - 1 + 1);
-                    x = rng.nextInt(boardSize - 1 + 1);
-                    System.out.println("RANDOM");
-            }*/
-//if (board.winCheck(y, x, activePlayer)) {
-                    
-                    
-                    
-                    
-                    /*for (; y < boardSize - 1 && repeat == true;) {
-                        y++;
-                        
-                        for (; x < boardSize - 1 && repeat == true;) {
-                            x++;
-                            
-                            if (board.takenCell(y, x) == false) {
-                                
-                                repeat = false;
-                                break;
-                            }
-                        }
-                                               if (board.takenCell(y, x) == false) {
-                            
-                            repeat = false;
-                            break;
-                        }
- 
-                    }*/
-                    //y = rng.nextInt(boardSize - 1 + 1); Helt random
-                    //x = rng.nextInt(boardSize - 1 + 1);
-
-                
-                //if (board.winCheck(y, x, activePlayer))
+    public int minimax(Board boardIn, int depthIn, int playerNumberIn, ArrayList<Player> playersIn) {
+        if (depthIn < 1 || boardIn.getState(playersIn) >= -1) {
+            int score = boardIn.evaluateBoard(playersIn, boardIn, playerNumberIn);
+            return score;
+        }
+        
+        if (playerNumberIn == 1) {
+            int maxValue = -10000;
+            ArrayList<Board> childs = getChildren(boardIn, 1);
+            for (int i = 0; i < childs.size(); i++){
+                Board child = childs.get(i);
+                int value = minimax(child, depthIn-1, 0, playersIn);
+                maxValue = Math.max(maxValue, value);
+            }
+            return maxValue;
+        } else {
+            int minValue = 10000;
+            ArrayList<Board> childs = getChildren(boardIn, 0);
+            for (int i = 0; i<childs.size(); i++){
+                Board child = childs.get(i);
+                int value = minimax(child, depthIn-1, 1, playersIn);
+                minValue = Math.min(minValue, value);
+            }
+            return minValue;
+        }
+    }
+    
+    public ArrayList<Board> getChildren(Board boardIn, int playerNumberIn){
+        ArrayList<Board> childrenOut = new ArrayList<Board>();
+        ArrayList<Move> possibleMoves = boardIn.getPossibleMoves();
+        
+        for(int i = 0; i < possibleMoves.size(); i++){
+            Board tempBoard = boardIn.getCopy();
+            
+            int x = possibleMoves.get(i).getX();
+            int y = possibleMoves.get(i).getY();
+            char mark = (playerNumberIn == 0) ? 'X' : 'O';
+            tempBoard.setCell(y, x, mark);
+            childrenOut.add(tempBoard);
+        }
+        return childrenOut;
     }
 }
-
