@@ -22,7 +22,7 @@ public class TicTacToe {
             switchPlayer();
         }
     }
-    
+    //TEST
     public static Board setupBoard() {
         System.out.print("Size of board (" + minBoardSize + "-" + maxBoardSize + "): ");
         Board board = new Board(getAnInteger(minBoardSize, maxBoardSize));
